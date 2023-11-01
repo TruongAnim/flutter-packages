@@ -148,6 +148,10 @@ class Camera
 
   MethodChannel.Result flutterResult;
 
+  private CustomVideoRenderer customVideoRenderer;
+  Surface outputRendererSurface;
+  Surface inputRendererSurface;
+
   /** A CameraDeviceWrapper implementation that forwards calls to a CameraDevice. */
   private class DefaultCameraDeviceWrapper implements CameraDeviceWrapper {
     private final CameraDevice cameraDevice;
@@ -227,6 +231,46 @@ class Camera
     runPrecaptureSequence();
   }
 
+  private void initOutputRendererSurface() {
+    // Get surface from mediaRecorder.
+    final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
+
+    // Create beautyRenderer to add filter to seach frame and return it to recordSurface
+    if (customVideoRenderer != null) return;
+    // handle beautyRenderer errors
+    Thread.UncaughtExceptionHandler beautyRendererUncaughtExceptionHandler =
+            new Thread.UncaughtExceptionHandler() {
+              @Override
+              public void uncaughtException(Thread thread, Throwable ex) {
+                dartMessenger.sendCameraErrorEvent(
+                        "Failed to process frames when add filter.");
+              }
+            };
+    customVideoRenderer =
+            new CustomVideoRenderer(
+                    mediaRecorder.getSurface(),
+                    resolutionFeature.getCaptureSize().getWidth(),
+                    resolutionFeature.getCaptureSize().getHeight(),
+                    beautyRendererUncaughtExceptionHandler);
+
+  }
+
+  private void initInputRendererSurface() {
+    // Set input for beautyRenderer
+    try {
+      inputRendererSurface = customVideoRenderer.getInputSurface();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void closeCustomVideoRenderer() {
+    if (customVideoRenderer != null) {
+      customVideoRenderer.close();
+      customVideoRenderer = null;
+    }
+  }
+
   /**
    * Updates the builder settings with all of the available features.
    *
@@ -248,6 +292,7 @@ class Camera
       mediaRecorder.release();
     }
     closeRenderer();
+    closeCustomVideoRenderer();
 
     final PlatformChannel.DeviceOrientation lockedOrientation =
         cameraFeatures.getSensorOrientation().getLockedCaptureOrientation();
@@ -261,15 +306,23 @@ class Camera
     } else {
       mediaRecorderBuilder = new MediaRecorderBuilder(getRecordingProfileLegacy(), outputFilePath);
     }
-
+    int rotation = 0;
+    rotation =
+            lockedOrientation == null
+                    ? getDeviceOrientationManager().getVideoOrientation()
+                    : getDeviceOrientationManager().getVideoOrientation(lockedOrientation);
     mediaRecorder =
         mediaRecorderBuilder
             .setEnableAudio(enableAudio)
-            .setMediaOrientation(
-                lockedOrientation == null
-                    ? getDeviceOrientationManager().getVideoOrientation()
-                    : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
+            .setMediaOrientation(rotation)
             .build();
+    
+    initialCameraFacing = cameraProperties.getLensFacing();
+    if (cameraProperties.getLensFacing() != initialCameraFacing) {
+      rotation = (rotation + 180) % 360;
+    }
+    initOutputRendererSurface();
+    customVideoRenderer.setRotation(rotation);
   }
 
   @SuppressLint("MissingPermission")
@@ -536,7 +589,8 @@ class Camera
     List<Surface> surfaces = new ArrayList<>();
     Runnable successCallback = null;
     if (record) {
-      surfaces.add(mediaRecorder.getSurface());
+      initInputRendererSurface();
+      surfaces.add(inputRendererSurface);
       successCallback = () -> mediaRecorder.start();
     }
     if (stream && imageStreamReader != null) {
@@ -795,6 +849,7 @@ class Camera
     recordingVideo = false;
     try {
       closeRenderer();
+      closeCustomVideoRenderer();
       captureSession.abortCaptures();
       mediaRecorder.stop();
     } catch (CameraAccessException | IllegalStateException e) {
@@ -1233,6 +1288,7 @@ class Camera
     Log.i(TAG, "close");
 
     stopAndReleaseCamera();
+    closeCustomVideoRenderer();
 
     if (pictureImageReader != null) {
       pictureImageReader.close();
