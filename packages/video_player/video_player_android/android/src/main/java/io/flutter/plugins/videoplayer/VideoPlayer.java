@@ -8,14 +8,19 @@ import static androidx.media3.common.Player.REPEAT_MODE_ALL;
 import static androidx.media3.common.Player.REPEAT_MODE_OFF;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.Surface;
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackParameters;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.hls.HlsMediaSource;
+
 import io.flutter.view.TextureRegistry;
 
 final class VideoPlayer {
@@ -35,6 +40,7 @@ final class VideoPlayer {
    * @param options options for playback.
    * @return a video player instance.
    */
+  @OptIn(markerClass = UnstableApi.class)
   @NonNull
   static VideoPlayer create(
       Context context,
@@ -42,8 +48,10 @@ final class VideoPlayer {
       TextureRegistry.SurfaceTextureEntry textureEntry,
       VideoAsset asset,
       VideoPlayerOptions options) {
+    HlsMediaSource.Factory mediaSourceFactory = (HlsMediaSource.Factory) asset.getMediaSourceFactory(context);
+    mediaSourceFactory.createMediaSource(asset.getMediaItem());
     ExoPlayer.Builder builder =
-        new ExoPlayer.Builder(context).setMediaSourceFactory(asset.getMediaSourceFactory(context));
+        new ExoPlayer.Builder(context).setMediaSourceFactory(mediaSourceFactory);
     return new VideoPlayer(builder, events, textureEntry, asset.getMediaItem(), options);
   }
 
@@ -57,7 +65,7 @@ final class VideoPlayer {
     this.videoPlayerEvents = events;
     this.textureEntry = textureEntry;
     this.options = options;
-
+    
     ExoPlayer exoPlayer = builder.build();
     exoPlayer.setMediaItem(mediaItem);
     exoPlayer.prepare();

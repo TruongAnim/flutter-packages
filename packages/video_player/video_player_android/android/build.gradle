@@ -3,6 +3,9 @@ version '1.0-SNAPSHOT'
 def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 
 buildscript {
+    ext {
+        kotlin_version = '2.0.0'
+    }
     repositories {
         google()
         mavenCentral()
@@ -10,6 +13,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:8.5.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -25,6 +29,7 @@ project.getTasks().withType(JavaCompile){
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     // Conditional for compatibility with AGP <4.2.
@@ -72,4 +77,11 @@ android {
             }
         }
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
 }

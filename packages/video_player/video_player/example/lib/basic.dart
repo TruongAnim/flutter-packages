@@ -11,7 +11,9 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-void main() => runApp(const VideoApp());
+import 'test_hls_video.dart';
+
+void main() => runApp(const TestHlsVideo());
 
 /// Stateful widget to fetch and then display video content.
 class VideoApp extends StatefulWidget {
