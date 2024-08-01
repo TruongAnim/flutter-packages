@@ -18,6 +18,7 @@ import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackParameters;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.hls.HlsMediaSource;
 
@@ -50,8 +51,16 @@ final class VideoPlayer {
       VideoPlayerOptions options) {
     HlsMediaSource.Factory mediaSourceFactory = (HlsMediaSource.Factory) asset.getMediaSourceFactory(context);
     mediaSourceFactory.createMediaSource(asset.getMediaItem());
+    DefaultLoadControl.Builder loadBuilder = new DefaultLoadControl.Builder();
+    loadBuilder.setBufferDurationsMs(
+            2500,
+            5000,
+            2500,
+            2000
+    );
+    DefaultLoadControl loadControl = loadBuilder.build();
     ExoPlayer.Builder builder =
-        new ExoPlayer.Builder(context).setMediaSourceFactory(mediaSourceFactory);
+        new ExoPlayer.Builder(context).setMediaSourceFactory(mediaSourceFactory).setLoadControl(loadControl);
     return new VideoPlayer(builder, events, textureEntry, asset.getMediaItem(), options);
   }
 

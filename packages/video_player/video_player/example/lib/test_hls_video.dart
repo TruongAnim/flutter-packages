@@ -24,21 +24,19 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     print('start ${DateTime.now()} ${widget.videoUrl}}');
 
     controller.initialize().then((event) {
-      print(
-          'initialize time ${DateTime.now()} ${DateTime.now().millisecondsSinceEpoch - time}');
+      print('initialize time ${DateTime.now().millisecondsSinceEpoch - time}');
+      controller.play();
     });
   }
 
   @override
   void dispose() {
-    print('truong1 dispose ${widget.index}');
     controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('truong rebuild item');
     return VideoPlayer(controller);
   }
 }
@@ -61,7 +59,6 @@ class _TikTokPageViewState extends State<TikTokPageView> {
 
   @override
   Widget build(BuildContext context) {
-    print('truong rebuild pageview');
     return Column(
       children: [
         Container(
