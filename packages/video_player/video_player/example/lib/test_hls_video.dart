@@ -23,9 +23,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     int time = DateTime.now().millisecondsSinceEpoch;
     print('start ${DateTime.now()} ${widget.videoUrl}}');
 
-    controller.initialize().then((event) {
+    controller.initialize().then((event) async {
       print('initialize time ${DateTime.now().millisecondsSinceEpoch - time}');
-      controller.play();
+      await controller.play();
+      setState(() {});
     });
   }
 
@@ -37,7 +38,23 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return VideoPlayer(controller);
+    return Stack(children: [
+      VideoPlayer(controller),
+      Center(
+        child: IconButton(
+          onPressed: () {
+            if (controller.value.isPlaying) {
+              controller.pause();
+            } else {
+              controller.play();
+            }
+            setState(() {});
+          },
+          icon:
+              Icon(controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+        ),
+      )
+    ]);
   }
 }
 

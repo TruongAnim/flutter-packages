@@ -11,6 +11,7 @@
 #import "./include/video_player_avfoundation/AVAssetTrackUtils.h"
 #import "./include/video_player_avfoundation/FVPDisplayLink.h"
 #import "./include/video_player_avfoundation/messages.g.h"
+#import "video_player_avfoundation-Swift.h"
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
@@ -111,6 +112,8 @@ static void *presentationSizeContext = &presentationSizeContext;
 static void *durationContext = &durationContext;
 static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void *rateContext = &rateContext;
+
+CacheManager* _cacheManager;
 
 @implementation FVPVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset
@@ -251,8 +254,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   if ([headers count] != 0) {
     options = @{@"AVURLAssetHTTPHeaderFieldsKey" : headers};
   }
-  AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
-  AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:urlAsset];
+  AVPlayerItem *item = [_cacheManager getCachingPlayerItemForNormalPlayback:url cacheKey:url.absoluteString videoExtension: nil headers:headers];
   return [self initWithPlayerItem:item
                      frameUpdater:frameUpdater
                       displayLink:(FVPDisplayLink *)displayLink
@@ -662,6 +664,8 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  _cacheManager = [[CacheManager alloc] init];
+  [_cacheManager setup];
   return [self initWithAVFactory:[[FVPDefaultAVFactory alloc] init]
               displayLinkFactory:[[FVPDefaultDisplayLinkFactory alloc] init]
                        registrar:registrar];
