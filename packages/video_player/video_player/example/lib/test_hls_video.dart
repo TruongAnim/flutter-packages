@@ -53,6 +53,15 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           icon:
               Icon(controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
         ),
+      ),
+      Positioned(
+        bottom: 10,
+        left: 10,
+        right: 10,
+        child: VideoProgressIndicator(
+          controller,
+          allowScrubbing: true,
+        ),
       )
     ]);
   }

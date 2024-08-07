@@ -11,7 +11,7 @@
 #import "./include/video_player_avfoundation/AVAssetTrackUtils.h"
 #import "./include/video_player_avfoundation/FVPDisplayLink.h"
 #import "./include/video_player_avfoundation/messages.g.h"
-#import "video_player_avfoundation-Swift.h"
+#import <video_player_avfoundation/video_player_avfoundation-Swift.h>
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
