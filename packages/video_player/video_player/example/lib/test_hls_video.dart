@@ -19,7 +19,15 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.initState();
     print('init ${widget.index}');
 
-    controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl),
+        videoPlayerOptions: VideoPlayerOptions(
+            webOptions: const VideoPlayerWebOptions(),
+            hlsCacheConfig: HlsCacheConfig(
+                useCache: true,
+                key: widget.videoUrl,
+                maxCacheSize: 1024 * 1024 * 1024),
+            bufferingConfig:
+                const BufferingConfig(minBufferMs: 3000, maxBufferMs: 5000)));
     int time = DateTime.now().millisecondsSinceEpoch;
     print('start ${DateTime.now()} ${widget.videoUrl}}');
 

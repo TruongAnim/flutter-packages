@@ -15,8 +15,10 @@ import 'src/closed_caption_file.dart';
 
 export 'package:video_player_platform_interface/video_player_platform_interface.dart'
     show
+        BufferingConfig,
         DataSourceType,
         DurationRange,
+        HlsCacheConfig,
         VideoFormat,
         VideoPlayerOptions,
         VideoPlayerWebOptions,
@@ -437,7 +439,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           .setMixWithOthers(videoPlayerOptions!.mixWithOthers);
     }
 
-    _textureId = (await _videoPlayerPlatform.create(dataSourceDescription)) ??
+    _textureId = (await _videoPlayerPlatform.create(dataSourceDescription,
+            hlsCacheConfig: videoPlayerOptions?.hlsCacheConfig,
+            bufferingConfig: videoPlayerOptions?.bufferingConfig)) ??
         kUninitializedTextureId;
     _creatingCompleter!.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();

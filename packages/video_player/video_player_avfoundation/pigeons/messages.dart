@@ -18,12 +18,13 @@ import 'package:pigeon/pigeon.dart';
   copyrightHeader: 'pigeons/copyright.txt',
 ))
 class CreationOptions {
-  CreationOptions({required this.httpHeaders});
+  CreationOptions({required this.httpHeaders, required this.hlsCacheConfig});
   String? asset;
   String? uri;
   String? packageName;
   String? formatHint;
   Map<String?, String?> httpHeaders;
+  Map<String?, String?> hlsCacheConfig;
 }
 
 class MixWithOthersMessage {

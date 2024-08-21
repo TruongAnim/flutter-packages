@@ -143,6 +143,8 @@ class CreateMessage {
     this.packageName,
     this.formatHint,
     required this.httpHeaders,
+    required this.hlsCacheConfig,
+    required this.bufferingConfig,
   });
 
   String? asset;
@@ -155,6 +157,10 @@ class CreateMessage {
 
   Map<String?, String?> httpHeaders;
 
+  Map<String?, String?> hlsCacheConfig;
+
+  Map<String?, String?> bufferingConfig;
+
   Object encode() {
     return <Object?>[
       asset,
@@ -162,6 +168,8 @@ class CreateMessage {
       packageName,
       formatHint,
       httpHeaders,
+      hlsCacheConfig,
+      bufferingConfig,
     ];
   }
 
@@ -172,8 +180,9 @@ class CreateMessage {
       uri: result[1] as String?,
       packageName: result[2] as String?,
       formatHint: result[3] as String?,
-      httpHeaders:
-          (result[4] as Map<Object?, Object?>?)!.cast<String?, String?>(),
+      httpHeaders: (result[4] as Map<Object?, Object?>?)!.cast<String?, String?>(),
+      hlsCacheConfig: (result[5] as Map<Object?, Object?>?)!.cast<String?, String?>(),
+      bufferingConfig: (result[6] as Map<Object?, Object?>?)!.cast<String?, String?>(),
     );
   }
 }
@@ -232,19 +241,19 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:
+      case 128: 
         return CreateMessage.decode(readValue(buffer)!);
-      case 129:
+      case 129: 
         return LoopingMessage.decode(readValue(buffer)!);
-      case 130:
+      case 130: 
         return MixWithOthersMessage.decode(readValue(buffer)!);
-      case 131:
+      case 131: 
         return PlaybackSpeedMessage.decode(readValue(buffer)!);
-      case 132:
+      case 132: 
         return PositionMessage.decode(readValue(buffer)!);
-      case 133:
+      case 133: 
         return TextureMessage.decode(readValue(buffer)!);
-      case 134:
+      case 134: 
         return VolumeMessage.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -266,7 +275,8 @@ class AndroidVideoPlayerApi {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.AndroidVideoPlayerApi.initialize', codec,
         binaryMessenger: _binaryMessenger);
-    final List<Object?>? replyList = await channel.send(null) as List<Object?>?;
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

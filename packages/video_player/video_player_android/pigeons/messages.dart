@@ -43,12 +43,17 @@ class PositionMessage {
 }
 
 class CreateMessage {
-  CreateMessage({required this.httpHeaders});
+  CreateMessage(
+      {required this.httpHeaders,
+      required this.hlsCacheConfig,
+      required this.bufferingConfig});
   String? asset;
   String? uri;
   String? packageName;
   String? formatHint;
   Map<String?, String?> httpHeaders;
+  Map<String?, String?> hlsCacheConfig;
+  Map<String?, String?> bufferingConfig;
 }
 
 class MixWithOthersMessage {

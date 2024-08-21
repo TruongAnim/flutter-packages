@@ -31,7 +31,9 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int?> create(DataSource dataSource) async {
+  Future<int?> create(DataSource dataSource,
+      {HlsCacheConfig? hlsCacheConfig,
+      BufferingConfig? bufferingConfig}) async {
     String? asset;
     String? packageName;
     String? uri;
@@ -56,6 +58,7 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
       uri: uri,
       httpHeaders: httpHeaders,
       formatHint: formatHint,
+      hlsCacheConfig: hlsCacheConfig?.toMap() ?? const HlsCacheConfig().toMap(),
     );
 
     return _api.create(options);

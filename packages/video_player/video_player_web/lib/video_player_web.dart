@@ -47,7 +47,9 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int> create(DataSource dataSource) async {
+  Future<int> create(DataSource dataSource,
+      {HlsCacheConfig? hlsCacheConfig,
+      BufferingConfig? bufferingConfig}) async {
     final int textureId = _textureCounter++;
 
     late String uri;

@@ -49,7 +49,8 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   }
 
   /// Creates an instance of a video player and returns its textureId.
-  Future<int?> create(DataSource dataSource) {
+  Future<int?> create(DataSource dataSource,
+      {HlsCacheConfig? hlsCacheConfig, BufferingConfig? bufferingConfig}) {
     throw UnimplementedError('create() has not been implemented.');
   }
 
@@ -379,6 +380,8 @@ class VideoPlayerOptions {
     this.mixWithOthers = false,
     this.allowBackgroundPlayback = false,
     this.webOptions,
+    this.hlsCacheConfig,
+    this.bufferingConfig,
   });
 
   /// Set this to true to keep playing video in background, when app goes in background.
@@ -394,6 +397,78 @@ class VideoPlayerOptions {
 
   /// Additional web controls
   final VideoPlayerWebOptions? webOptions;
+
+  /// Hls cache config
+  final HlsCacheConfig? hlsCacheConfig;
+
+  /// Buffering config
+  final BufferingConfig? bufferingConfig;
+}
+
+/// [HlsCacheConfig] can be optionally used to cache hls video data
+@immutable
+class HlsCacheConfig {
+  /// [HlsCacheConfig] can be optionally used to cache hls video data
+  const HlsCacheConfig({
+    this.useCache = false,
+    this.preCacheSize = 10 * 1024 * 1024,
+    this.maxCacheSize = 100 * 1024 * 1024,
+    this.maxCacheFileSize = 10 * 1024 * 1024,
+    this.key,
+  });
+
+  /// Should cache hls video data or not
+  final bool useCache;
+
+  final double preCacheSize;
+
+  final double maxCacheSize;
+
+  final double maxCacheFileSize;
+
+  /// Key option to use cached video between app sessions
+  /// Use video url is a good option
+  final String? key;
+
+  Map<String, String?> toMap() {
+    return <String, String?>{
+      'useCache': useCache.toString(),
+      'preCacheSize': preCacheSize.toString(),
+      'maxCacheSize': maxCacheSize.toString(),
+      'maxCacheFileSize': maxCacheFileSize.toString(),
+      'key': key,
+    };
+  }
+}
+
+/// [BufferingConfig] can be optionally used to config how video player buffer video
+@immutable
+class BufferingConfig {
+  /// [BufferingConfig] can be optionally used to config how video player buffer video
+  const BufferingConfig({
+    this.minBufferMs = 5000,
+    this.maxBufferMs = 10000,
+    this.bufferForPlaybackMs = 3000,
+    this.bufferForPlaybackAfterRebufferMs = 3000,
+  });
+
+  final int minBufferMs;
+
+  final int maxBufferMs;
+
+  final int bufferForPlaybackMs;
+
+  final int bufferForPlaybackAfterRebufferMs;
+
+  Map<String, String?> toMap() {
+    return <String, String?>{
+      'minBufferMs': minBufferMs.toString(),
+      'maxBufferMs': maxBufferMs.toString(),
+      'bufferForPlaybackMs': bufferForPlaybackMs.toString(),
+      'bufferForPlaybackAfterRebufferMs':
+          bufferForPlaybackAfterRebufferMs.toString(),
+    };
+  }
 }
 
 /// [VideoPlayerWebOptions] can be optionally used to set additional web settings

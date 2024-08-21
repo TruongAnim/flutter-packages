@@ -65,7 +65,7 @@ public final class VideoAssetTest {
   public void remoteVideoByDefaultSetsUserAgentAndCrossProtocolRedirects() {
     VideoAsset asset =
         VideoAsset.fromRemoteUrl(
-            "https://flutter.dev/video.mp4", VideoAsset.StreamingFormat.UNKNOWN, new HashMap<>());
+            "https://flutter.dev/video.mp4", VideoAsset.StreamingFormat.UNKNOWN, new HashMap<>(), new VideoPlayerOptions());
 
     DefaultHttpDataSource.Factory mockFactory = mockHttpFactory();
 
@@ -85,7 +85,7 @@ public final class VideoAssetTest {
 
     VideoAsset asset =
         VideoAsset.fromRemoteUrl(
-            "https://flutter.dev/video.mp4", VideoAsset.StreamingFormat.UNKNOWN, headers);
+            "https://flutter.dev/video.mp4", VideoAsset.StreamingFormat.UNKNOWN, headers, new VideoPlayerOptions());
 
     DefaultHttpDataSource.Factory mockFactory = mockHttpFactory();
 
@@ -105,7 +105,7 @@ public final class VideoAssetTest {
   public void remoteVideoGetMediaSourceFactoryInProductionReturnsRealMediaSource() {
     VideoAsset asset =
         VideoAsset.fromRemoteUrl(
-            "https://flutter.dev/video.mp4", VideoAsset.StreamingFormat.UNKNOWN, new HashMap<>());
+            "https://flutter.dev/video.mp4", VideoAsset.StreamingFormat.UNKNOWN, new HashMap<>(), new VideoPlayerOptions());
 
     MediaSource source =
         asset
@@ -123,7 +123,7 @@ public final class VideoAssetTest {
 
     VideoAsset asset =
         VideoAsset.fromRemoteUrl(
-            "https://flutter.dev/video.mp4", VideoAsset.StreamingFormat.UNKNOWN, headers);
+            "https://flutter.dev/video.mp4", VideoAsset.StreamingFormat.UNKNOWN, headers, new VideoPlayerOptions());
 
     DefaultHttpDataSource.Factory mockFactory = mockHttpFactory();
 

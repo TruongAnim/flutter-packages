@@ -31,7 +31,9 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int?> create(DataSource dataSource) async {
+  Future<int?> create(DataSource dataSource,
+      {HlsCacheConfig? hlsCacheConfig,
+      BufferingConfig? bufferingConfig}) async {
     String? asset;
     String? packageName;
     String? uri;
@@ -57,6 +59,9 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
       uri: uri,
       httpHeaders: httpHeaders,
       formatHint: formatHint,
+      hlsCacheConfig: hlsCacheConfig?.toMap() ?? const HlsCacheConfig().toMap(),
+      bufferingConfig:
+          bufferingConfig?.toMap() ?? const BufferingConfig().toMap(),
     );
 
     final TextureMessage response = await _api.create(message);
