@@ -1,0 +1,14 @@
+{
+  "originHash" : "78c7627871bfd9e691f83c7deb792b533905321b817a3314495d5a35c9268003",
+  "pins" : [
+    {
+      "identity" : "ocmock",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/erikdoe/ocmock",
+      "state" : {
+        "revision" : "ef21a2ece3ee092f8ed175417718bdd9b8eb7c9a"
+      }
+    }
+  ],
+  "version" : 3
+}

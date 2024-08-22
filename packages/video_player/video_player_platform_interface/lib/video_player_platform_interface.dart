@@ -414,7 +414,7 @@ class HlsCacheConfig {
     this.preCacheSize = 10 * 1024 * 1024,
     this.maxCacheSize = 100 * 1024 * 1024,
     this.maxCacheFileSize = 10 * 1024 * 1024,
-    this.key,
+    this.cacheKey,
   });
 
   /// Should cache hls video data or not
@@ -428,7 +428,7 @@ class HlsCacheConfig {
 
   /// Key option to use cached video between app sessions
   /// Use video url is a good option
-  final String? key;
+  final String? cacheKey;
 
   Map<String, String?> toMap() {
     return <String, String?>{
@@ -436,7 +436,7 @@ class HlsCacheConfig {
       'preCacheSize': preCacheSize.toString(),
       'maxCacheSize': maxCacheSize.toString(),
       'maxCacheFileSize': maxCacheFileSize.toString(),
-      'key': key,
+      'cacheKey': cacheKey,
     };
   }
 }

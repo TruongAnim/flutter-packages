@@ -24,7 +24,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             webOptions: const VideoPlayerWebOptions(),
             hlsCacheConfig: HlsCacheConfig(
                 useCache: true,
-                key: widget.videoUrl,
+                cacheKey: widget.videoUrl,
                 maxCacheSize: 1024 * 1024 * 1024),
             bufferingConfig:
                 const BufferingConfig(minBufferMs: 3000, maxBufferMs: 5000)));
@@ -84,9 +84,9 @@ class TikTokPageView extends StatefulWidget {
 
 class _TikTokPageViewState extends State<TikTokPageView> {
   final List<String> videoUrls = [
-    'https://ccdn.dramahub.me/videos/538457732c5566285b9524cdfbb337b2/index.m3u8',
-    'https://ccdn.dramahub.me/videos/033918075234465ef575018b76b2fd31/index.m3u8',
-    'https://ccdn.dramahub.me/videos/bf708fc4edd230b7e8f912508b30ec51/index.m3u8',
+    'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/3d3bafbb8f8245189733757fb9f06b20/manifest/video.m3u8',
+    'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8',
+    'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/a07cbb3c111848e3806eeecc0cdcad63/manifest/video.m3u8',
     'https://ccdn.dramahub.me/videos/4d97870e3a3c4fd1a099dafb12e08504/index.m3u8',
     'https://ccdn.dramahub.me/videos/09b782d7e6a9229ab026ce8ca7b503be/index.m3u8',
   ];

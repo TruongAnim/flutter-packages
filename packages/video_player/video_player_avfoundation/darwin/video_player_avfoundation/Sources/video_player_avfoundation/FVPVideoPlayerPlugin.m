@@ -98,6 +98,7 @@
                frameUpdater:(FVPFrameUpdater *)frameUpdater
                 displayLink:(FVPDisplayLink *)displayLink
                 httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers
+                hlsCacheConfig:(nonnull NSDictionary<NSString *, NSString *> *)hlsCacheConfig
                   avFactory:(id<FVPAVFactory>)avFactory
                   registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 
@@ -133,6 +134,7 @@ CacheManager* _cacheManager;
               frameUpdater:frameUpdater
                displayLink:displayLink
                httpHeaders:@{}
+               hlsCacheConfig:@{}
                  avFactory:avFactory
                  registrar:registrar];
 }
@@ -248,13 +250,21 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
                frameUpdater:(FVPFrameUpdater *)frameUpdater
                 displayLink:(FVPDisplayLink *)displayLink
                 httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers
+                hlsCacheConfig:(nonnull NSDictionary<NSString *, NSString *> *)hlsCacheConfig
                   avFactory:(id<FVPAVFactory>)avFactory
                   registrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   NSDictionary<NSString *, id> *options = nil;
   if ([headers count] != 0) {
     options = @{@"AVURLAssetHTTPHeaderFieldsKey" : headers};
   }
-  AVPlayerItem *item = [_cacheManager getCachingPlayerItemForNormalPlayback:url cacheKey:url.absoluteString videoExtension: nil headers:headers];
+  AVPlayerItem *item = nil;
+  NSString *useCacheValue = hlsCacheConfig[@"useCache"];
+  if ([useCacheValue isEqualToString:@"true"]){
+    item = [_cacheManager getCachingPlayerItemForNormalPlayback:url cacheKey:hlsCacheConfig[@"cacheKey"] videoExtension: nil headers:headers];
+  }else{
+    AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
+    item = [AVPlayerItem playerItemWithAsset:urlAsset];
+  }
   return [self initWithPlayerItem:item
                      frameUpdater:frameUpdater
                       displayLink:(FVPDisplayLink *)displayLink
@@ -756,6 +766,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
                                     frameUpdater:frameUpdater
                                      displayLink:displayLink
                                      httpHeaders:options.httpHeaders
+                                     hlsCacheConfig:options.hlsCacheConfig
                                        avFactory:_avFactory
                                        registrar:self.registrar];
     return @([self onPlayerSetup:player frameUpdater:frameUpdater]);

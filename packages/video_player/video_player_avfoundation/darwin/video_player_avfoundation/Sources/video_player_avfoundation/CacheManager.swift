@@ -5,41 +5,44 @@ import GCDWebServer
 import PINCache
 
 @objc public class CacheManager: NSObject {
-
+    var diskCacheSize: UInt = 1024 * 1024 * 1024
+    
     // We store the last pre-cached CachingPlayerItem objects to be able to play even if the download
     // has not finished.
     var _preCachedURLs = Dictionary<String, CachingPlayerItem>()
-
+    
     var completionHandler: ((_ success:Bool) -> Void)? = nil
-
-    var diskConfig = DiskConfig(name: "VideoPlayerCache", expiry: .date(Date().addingTimeInterval(3600*24*30)),
-                                maxSize: 100*1024*1024)
+    
+    lazy var diskConfig = DiskConfig(name: "VideoPlayerCache", expiry: .date(Date().addingTimeInterval(3600*24*30)),
+                                     maxSize: diskCacheSize)
     
     // Flag whether the CachingPlayerItem was already cached.
     var _existsInStorage: Bool = false
     
     let memoryConfig = MemoryConfig(
-      // Expiry date that will be applied by default for every added object
-      // if it's not overridden in the `setObject(forKey:expiry:)` method
-      expiry: .never,
-      // The maximum number of objects in memory the cache should hold
-      countLimit: 0,
-      // The maximum total cost that the cache can hold before it starts evicting objects, 0 for no limit
-      totalCostLimit: 0
+        // Expiry date that will be applied by default for every added object
+        // if it's not overridden in the `setObject(forKey:expiry:)` method
+        expiry: .never,
+        // The maximum number of objects in memory the cache should hold
+        countLimit: 0,
+        // The maximum total cost that the cache can hold before it starts evicting objects, 0 for no limit
+        totalCostLimit: 0
     )
     
     var server: HLSCachingReverseProxyServer?
-
+    
     lazy var storage: Cache.Storage<String,Data>? = {
         return try? Cache.Storage<String,Data>(diskConfig: diskConfig, memoryConfig: memoryConfig, transformer: TransformerFactory.forCodable(ofType: Data.self))
     }()
     
-
+    
     ///Setups cache server for HLS streams
     @objc public func setup(){
         GCDWebServer.setLogLevel(4)
         let webServer = GCDWebServer()
         let cache = PINCache.shared
+        cache.diskCache.byteLimit = diskCacheSize
+        cache.diskCache.ageLimit = 30 * 24 * 60 * 60
         let urlSession = URLSession.shared
         server = HLSCachingReverseProxyServer(webServer: webServer, urlSession: urlSession, cache: cache)
         server?.start(port: 8080)
@@ -49,16 +52,16 @@ import PINCache
         if let unsigned = maxCacheSize {
             let _maxCacheSize = unsigned.uintValue
             diskConfig = DiskConfig(name: "VideoPlayerCache", expiry: .date(Date().addingTimeInterval(3600*24*30)), maxSize: _maxCacheSize)
-        }        
+        }
     }
-
+    
     // MARK: - Logic
     @objc public func preCacheURL(_ url: URL, cacheKey: String?, videoExtension: String?, withHeaders headers: Dictionary<NSObject,AnyObject>, completionHandler: ((_ success:Bool) -> Void)?) {
         self.completionHandler = completionHandler
         
         let _key: String = cacheKey ?? url.absoluteString
         // Make sure the item is not already being downloaded
-        if self._preCachedURLs[_key] == nil {            
+        if self._preCachedURLs[_key] == nil {
             if let item = self.getCachingPlayerItem(url, cacheKey: _key, videoExtension: videoExtension, headers: headers){
                 if !self._existsInStorage {
                     self._preCachedURLs[_key] = item
@@ -98,7 +101,7 @@ import PINCache
         }
     }
     
-
+    
     // Get a CachingPlayerItem either from the network if it's not cached or from the cache.
     @objc public func getCachingPlayerItem(_ url: URL, cacheKey: String?,videoExtension: String?, headers: Dictionary<NSObject,AnyObject>) -> CachingPlayerItem? {
         let playerItem: CachingPlayerItem
@@ -210,14 +213,14 @@ extension CacheManager: CachingPlayerItemDelegate {
         storage?.async.setObject(data, forKey: playerItem.cacheKey ?? playerItem.url.absoluteString, completion: { _ in })
         self.completionHandler?(true)
     }
-
-     func playerItem(_ playerItem: CachingPlayerItem, didDownloadBytesSoFar bytesDownloaded: Int, outOf bytesExpected: Int){
+    
+    func playerItem(_ playerItem: CachingPlayerItem, didDownloadBytesSoFar bytesDownloaded: Int, outOf bytesExpected: Int){
         /// Is called every time a new portion of data is received.
         let percentage = Double(bytesDownloaded)/Double(bytesExpected)*100.0
         let str = String(format: "%.1f%%", percentage)
         //NSLog("Downloading... %@", str)
     }
-
+    
     func playerItem(_ playerItem: CachingPlayerItem, downloadingFailedWith error: Error){
         /// Is called on downloading error.
         NSLog("Error when downloading the file %@", error as NSError);
