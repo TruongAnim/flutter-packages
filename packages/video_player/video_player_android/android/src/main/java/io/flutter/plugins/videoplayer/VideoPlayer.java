@@ -18,6 +18,7 @@ import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackParameters;
+import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -54,11 +55,9 @@ final class VideoPlayer {
         if (options.useCache) {
             HlsMediaSource.Factory mediaSourceFactory = (HlsMediaSource.Factory) asset.getMediaSourceFactory(context);
             mediaSourceFactory.createMediaSource(asset.getMediaItem());
-            builder =
-                    new ExoPlayer.Builder(context).setMediaSourceFactory(mediaSourceFactory);
+            builder = new ExoPlayer.Builder(context).setMediaSourceFactory(mediaSourceFactory);
         } else {
-            builder =
-                    new ExoPlayer.Builder(context).setMediaSourceFactory(asset.getMediaSourceFactory(context));
+            builder = new ExoPlayer.Builder(context).setMediaSourceFactory(asset.getMediaSourceFactory(context));
         }
         DefaultLoadControl.Builder loadBuilder = new DefaultLoadControl.Builder();
         loadBuilder.setBufferDurationsMs(
@@ -70,6 +69,53 @@ final class VideoPlayer {
         DefaultLoadControl loadControl = loadBuilder.build();
         builder.setLoadControl(loadControl);
         return new VideoPlayer(builder, events, textureEntry, asset.getMediaItem(), options);
+    }
+
+    /**
+     * Precache a video player.
+     *
+     * @param context application context.
+     * @param asset   asset to play.
+     * @param options options for playback.
+     */
+    @OptIn(markerClass = UnstableApi.class)
+    static boolean preCache(
+            Context context,
+            VideoAsset asset,
+            VideoPlayerOptions options) {
+        if (options.useCache) {
+            HlsMediaSource.Factory mediaSourceFactory = (HlsMediaSource.Factory) asset.getMediaSourceFactory(context);
+            mediaSourceFactory.createMediaSource(asset.getMediaItem());
+            ExoPlayer.Builder builder = new ExoPlayer.Builder(context).setMediaSourceFactory(mediaSourceFactory);
+            DefaultLoadControl.Builder loadBuilder = new DefaultLoadControl.Builder();
+            loadBuilder.setBufferDurationsMs(
+                    options.minBufferMs,
+                    options.maxBufferMs,
+                    options.bufferForPlaybackMs,
+                    options.bufferForPlaybackAfterRebufferMs
+            );
+            DefaultLoadControl loadControl = loadBuilder.build();
+            builder.setLoadControl(loadControl);
+            ExoPlayer exoPlayer = builder.build();
+            exoPlayer.setMediaItem(asset.getMediaItem());
+            exoPlayer.prepare();
+            // Pause immediately to prevent playback
+            exoPlayer.pause();
+            // Add a listener to monitor the caching progress
+            exoPlayer.addListener(new Player.Listener() {
+                @Override
+                public void onPlaybackStateChanged(int playbackState) {
+                    if (playbackState == Player.STATE_READY) {
+                        // The player has buffered all available segments.
+                        // You can check buffering progress here or monitor cache usage.
+                        // If the content is fully buffered, you can stop the player.
+                        exoPlayer.release(); // Release the player when done
+                    }
+                }
+            });
+            return true;
+        }
+        return false;
     }
 
     @VisibleForTesting

@@ -110,6 +110,55 @@ public class Messages {
   }
 
   /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class PreCacheMessage {
+    private @NonNull Boolean isSuccess;
+
+    public @NonNull Boolean getIsSuccess() {
+      return isSuccess;
+    }
+
+    public void setIsSuccess(@NonNull Boolean setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"isSuccess\" is null.");
+      }
+      this.isSuccess = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    PreCacheMessage() {}
+
+    public static final class Builder {
+
+      private @Nullable Boolean isSuccess;
+
+      public @NonNull Builder setIsSuccess(@NonNull Boolean setterArg) {
+        this.isSuccess = setterArg;
+        return this;
+      }
+
+      public @NonNull PreCacheMessage build() {
+        PreCacheMessage pigeonReturn = new PreCacheMessage();
+        pigeonReturn.setIsSuccess(isSuccess);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(1);
+      toListResult.add(isSuccess);
+      return toListResult;
+    }
+
+    static @NonNull PreCacheMessage fromList(@NonNull ArrayList<Object> list) {
+      PreCacheMessage pigeonResult = new PreCacheMessage();
+      Object isSuccess = list.get(0);
+      pigeonResult.setIsSuccess((Boolean) isSuccess);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
   public static final class LoopingMessage {
     private @NonNull Long textureId;
 
@@ -650,8 +699,10 @@ public class Messages {
         case (byte) 132:
           return PositionMessage.fromList((ArrayList<Object>) readValue(buffer));
         case (byte) 133:
-          return TextureMessage.fromList((ArrayList<Object>) readValue(buffer));
+          return PreCacheMessage.fromList((ArrayList<Object>) readValue(buffer));
         case (byte) 134:
+          return TextureMessage.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 135:
           return VolumeMessage.fromList((ArrayList<Object>) readValue(buffer));
         default:
           return super.readValueOfType(type, buffer);
@@ -675,11 +726,14 @@ public class Messages {
       } else if (value instanceof PositionMessage) {
         stream.write(132);
         writeValue(stream, ((PositionMessage) value).toList());
-      } else if (value instanceof TextureMessage) {
+      } else if (value instanceof PreCacheMessage) {
         stream.write(133);
+        writeValue(stream, ((PreCacheMessage) value).toList());
+      } else if (value instanceof TextureMessage) {
+        stream.write(134);
         writeValue(stream, ((TextureMessage) value).toList());
       } else if (value instanceof VolumeMessage) {
-        stream.write(134);
+        stream.write(135);
         writeValue(stream, ((VolumeMessage) value).toList());
       } else {
         super.writeValue(stream, value);
@@ -694,6 +748,9 @@ public class Messages {
 
     @NonNull 
     TextureMessage create(@NonNull CreateMessage msg);
+
+    @NonNull 
+    PreCacheMessage preCache(@NonNull CreateMessage msg);
 
     void dispose(@NonNull TextureMessage msg);
 
@@ -754,6 +811,30 @@ public class Messages {
                 CreateMessage msgArg = (CreateMessage) args.get(0);
                 try {
                   TextureMessage output = api.create(msgArg);
+                  wrapped.add(0, output);
+                }
+ catch (Throwable exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.AndroidVideoPlayerApi.preCache", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                CreateMessage msgArg = (CreateMessage) args.get(0);
+                try {
+                  PreCacheMessage output = api.preCache(msgArg);
                   wrapped.add(0, output);
                 }
  catch (Throwable exception) {

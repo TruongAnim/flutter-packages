@@ -396,6 +396,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   @visibleForTesting
   int get textureId => _textureId;
 
+  /// PreCache video without playing it.
+  static Future<bool?> preCache(String url,
+      {VideoPlayerOptions? videoPlayerOptions,
+      Map<String, String> httpHeaders = const <String, String>{}}) async {
+    final DataSource dataSource = DataSource(
+      sourceType: DataSourceType.network,
+      uri: url,
+      httpHeaders: httpHeaders,
+    );
+    return _videoPlayerPlatform.preCache(dataSource,
+        hlsCacheConfig: videoPlayerOptions?.hlsCacheConfig,
+        bufferingConfig: videoPlayerOptions?.bufferingConfig);
+  }
+
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
     final bool allowBackgroundPlayback =

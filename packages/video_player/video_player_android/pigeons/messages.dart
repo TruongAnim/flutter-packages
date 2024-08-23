@@ -18,6 +18,11 @@ class TextureMessage {
   int textureId;
 }
 
+class PreCacheMessage {
+  PreCacheMessage(this.isSuccess);
+  bool isSuccess;
+}
+
 class LoopingMessage {
   LoopingMessage(this.textureId, this.isLooping);
   int textureId;
@@ -65,6 +70,7 @@ class MixWithOthersMessage {
 abstract class AndroidVideoPlayerApi {
   void initialize();
   TextureMessage create(CreateMessage msg);
+  PreCacheMessage preCache(CreateMessage msg);
   void dispose(TextureMessage msg);
   void setLooping(LoopingMessage msg);
   void setVolume(VolumeMessage msg);

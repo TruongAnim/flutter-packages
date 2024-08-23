@@ -36,7 +36,7 @@ class VideoPlayerOptions {
 
     public void setHlsCacheConfig(Map<String, String> config) {
         String key = config.get("cacheKey");
-        cacheKey = (key != null) ? key : "default_key";
+        cacheKey = (key != null) ? key : "";
         preCacheSize = parseIntWithFallback(config.get("preCacheSize"), 10 * 1024 * 1024);
         maxCacheSize = parseIntWithFallback(config.get("maxCacheSize"), 1024 * 1024 * 1024);
         maxCacheFileSize = parseIntWithFallback(config.get("maxCacheFileSize"), 10 * 1024 * 1024);

@@ -8,6 +8,8 @@ import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import android.util.Log
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
 
 internal class CacheDataSourceFactory(
     private val context: Context,
@@ -16,8 +18,10 @@ internal class CacheDataSourceFactory(
     upstreamDataSource: DataSource.Factory?
 ) : DataSource.Factory {
     private var defaultDatasourceFactory: DefaultDataSource.Factory? = null
+
+    @OptIn(UnstableApi::class)
     override fun createDataSource(): CacheDataSource {
-        val betterPlayerCache = BetterPlayerCache.createCache(context, maxCacheSize)
+        val betterPlayerCache = VideoPlayerCache.createCache(context, maxCacheSize)
             ?: throw IllegalStateException("Cache can't be null.")
         return CacheDataSource(
             betterPlayerCache,

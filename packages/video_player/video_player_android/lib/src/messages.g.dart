@@ -32,6 +32,27 @@ class TextureMessage {
   }
 }
 
+class PreCacheMessage {
+  PreCacheMessage({
+    required this.isSuccess,
+  });
+
+  bool isSuccess;
+
+  Object encode() {
+    return <Object?>[
+      isSuccess,
+    ];
+  }
+
+  static PreCacheMessage decode(Object result) {
+    result as List<Object?>;
+    return PreCacheMessage(
+      isSuccess: result[0]! as bool,
+    );
+  }
+}
+
 class LoopingMessage {
   LoopingMessage({
     required this.textureId,
@@ -227,11 +248,14 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is PositionMessage) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is PreCacheMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(134);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(135);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -252,8 +276,10 @@ class _AndroidVideoPlayerApiCodec extends StandardMessageCodec {
       case 132: 
         return PositionMessage.decode(readValue(buffer)!);
       case 133: 
-        return TextureMessage.decode(readValue(buffer)!);
+        return PreCacheMessage.decode(readValue(buffer)!);
       case 134: 
+        return TextureMessage.decode(readValue(buffer)!);
+      case 135: 
         return VolumeMessage.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -317,6 +343,33 @@ class AndroidVideoPlayerApi {
       );
     } else {
       return (replyList[0] as TextureMessage?)!;
+    }
+  }
+
+  Future<PreCacheMessage> preCache(CreateMessage arg_msg) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.AndroidVideoPlayerApi.preCache', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_msg]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as PreCacheMessage?)!;
     }
   }
 

@@ -92,6 +92,32 @@ class _TikTokPageViewState extends State<TikTokPageView> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    VideoPlayerController.preCache(
+        'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8',
+        videoPlayerOptions: VideoPlayerOptions(
+            hlsCacheConfig: HlsCacheConfig(
+                useCache: true,
+                cacheKey:
+                    'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8')));
+    VideoPlayerController.preCache(
+        'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/3d3bafbb8f8245189733757fb9f06b20/manifest/video.m3u8',
+        videoPlayerOptions: VideoPlayerOptions(
+            hlsCacheConfig: HlsCacheConfig(
+                useCache: true,
+                cacheKey:
+                    'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/3d3bafbb8f8245189733757fb9f06b20/manifest/video.m3u8')));
+    VideoPlayerController.preCache(
+        'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/a07cbb3c111848e3806eeecc0cdcad63/manifest/video.m3u8',
+        videoPlayerOptions: VideoPlayerOptions(
+            hlsCacheConfig: HlsCacheConfig(
+                useCache: true,
+                cacheKey:
+                    'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/a07cbb3c111848e3806eeecc0cdcad63/manifest/video.m3u8')));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [

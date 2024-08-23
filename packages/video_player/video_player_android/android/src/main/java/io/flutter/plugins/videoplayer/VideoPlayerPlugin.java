@@ -17,6 +17,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.videoplayer.Messages.AndroidVideoPlayerApi;
 import io.flutter.plugins.videoplayer.Messages.CreateMessage;
+import io.flutter.plugins.videoplayer.Messages.PreCacheMessage;
 import io.flutter.plugins.videoplayer.Messages.LoopingMessage;
 import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
 import io.flutter.plugins.videoplayer.Messages.PlaybackSpeedMessage;
@@ -127,6 +128,9 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
             Map<String, String> hlsCacheConfig = arg.getHlsCacheConfig();
             options.setHlsBufferConfig(hlsBufferConfig);
             options.setHlsCacheConfig(hlsCacheConfig);
+            if(options.cacheKey == null || options.cacheKey.isEmpty()){
+                options.cacheKey = arg.getUri();
+            }
             VideoAsset.StreamingFormat streamingFormat = VideoAsset.StreamingFormat.UNKNOWN;
             String formatHint = arg.getFormatHint();
             if (formatHint != null) {
@@ -142,7 +146,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
                         break;
                 }
             }
-            videoAsset = VideoAsset.fromRemoteUrl(arg.getUri(), streamingFormat, arg.getHttpHeaders(), options);
+            videoAsset = VideoAsset.fromRemoteUrl(arg.getUri(), streamingFormat, httpHeaders, options);
         }
         videoPlayers.put(
                 handle.id(),
@@ -154,6 +158,35 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
                         options));
 
         return new TextureMessage.Builder().setTextureId(handle.id()).build();
+    }
+
+    public @NonNull PreCacheMessage preCache(@NonNull CreateMessage arg) {
+        Map<String, String> httpHeaders = arg.getHttpHeaders();
+        Map<String, String> hlsBufferConfig = arg.getBufferingConfig();
+        Map<String, String> hlsCacheConfig = arg.getHlsCacheConfig();
+        options.setHlsBufferConfig(hlsBufferConfig);
+        options.setHlsCacheConfig(hlsCacheConfig);
+        if(options.cacheKey == null || options.cacheKey.isEmpty()){
+            options.cacheKey = arg.getUri();
+        }
+        VideoAsset.StreamingFormat streamingFormat = VideoAsset.StreamingFormat.UNKNOWN;
+        String formatHint = arg.getFormatHint();
+        if (formatHint != null) {
+            switch (formatHint) {
+                case "ss":
+                    streamingFormat = VideoAsset.StreamingFormat.SMOOTH;
+                    break;
+                case "dash":
+                    streamingFormat = VideoAsset.StreamingFormat.DYNAMIC_ADAPTIVE;
+                    break;
+                case "hls":
+                    streamingFormat = VideoAsset.StreamingFormat.HTTP_LIVE;
+                    break;
+            }
+        }
+        final VideoAsset videoAsset = VideoAsset.fromRemoteUrl(arg.getUri(), streamingFormat, httpHeaders, options);
+        final boolean result = VideoPlayer.preCache(flutterState.applicationContext, videoAsset, options);
+        return new PreCacheMessage.Builder().setIsSuccess(result).build();
     }
 
     public void dispose(@NonNull TextureMessage arg) {

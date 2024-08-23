@@ -28,6 +28,13 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   }
 
   @override
+  PreCacheMessage preCache(CreateMessage arg) {
+    log.add('preCache');
+    createMessage = arg;
+    return PreCacheMessage(isSuccess: true);
+  }
+
+  @override
   void dispose(TextureMessage arg) {
     log.add('dispose');
     textureMessage = arg;

@@ -31,6 +31,26 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<bool?> preCache(DataSource dataSource,
+      {HlsCacheConfig? hlsCacheConfig,
+      BufferingConfig? bufferingConfig}) async {
+    String? uri;
+    Map<String, String> httpHeaders = <String, String>{};
+    uri = dataSource.uri;
+    httpHeaders = dataSource.httpHeaders;
+    final CreateMessage message = CreateMessage(
+      uri: uri,
+      httpHeaders: httpHeaders,
+      hlsCacheConfig: hlsCacheConfig?.toMap() ?? const HlsCacheConfig().toMap(),
+      bufferingConfig:
+          bufferingConfig?.toMap() ?? const BufferingConfig().toMap(),
+    );
+
+    final PreCacheMessage response = await _api.preCache(message);
+    return response.isSuccess;
+  }
+
+  @override
   Future<int?> create(DataSource dataSource,
       {HlsCacheConfig? hlsCacheConfig,
       BufferingConfig? bufferingConfig}) async {
