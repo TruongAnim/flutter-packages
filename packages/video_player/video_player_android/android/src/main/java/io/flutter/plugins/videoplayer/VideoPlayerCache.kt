@@ -92,6 +92,18 @@ object VideoPlayerCache {
     @Volatile
     private var instance: SimpleCache? = null
     fun createCache(context: Context, cacheFileSize: Long): SimpleCache? {
+        initCache(context, cacheFileSize)
+        return instance
+    }
+
+    fun isCached(cacheKey: String, position: Long, length: Long): Boolean {
+        if (instance != null) {
+            return instance!!.isCached(cacheKey, position, length);
+        }
+        return false
+    }
+
+    fun initCache(context: Context, cacheFileSize: Long) {
         if (instance == null) {
             synchronized(VideoPlayerCache::class.java) {
                 if (instance == null) {
@@ -103,7 +115,6 @@ object VideoPlayerCache {
                 }
             }
         }
-        return instance
     }
 
     @JvmStatic

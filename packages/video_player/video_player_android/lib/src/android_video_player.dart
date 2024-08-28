@@ -51,6 +51,17 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<bool> isCached(String cacheKey, int position, int length) async {
+    return _api.isCached(
+        IsCacheMessage(cacheKey: cacheKey, position: position, length: length));
+  }
+
+  @override
+  Future<void> initCache(int maxCacheSize) async {
+    return _api.initCache(maxCacheSize);
+  }
+
+  @override
   Future<int?> create(DataSource dataSource,
       {HlsCacheConfig? hlsCacheConfig,
       BufferingConfig? bufferingConfig}) async {

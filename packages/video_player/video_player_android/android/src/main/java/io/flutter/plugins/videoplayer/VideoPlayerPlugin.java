@@ -9,6 +9,8 @@ import android.os.Build;
 import android.util.LongSparseArray;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.UnstableApi;
 
 import io.flutter.FlutterInjector;
 import io.flutter.Log;
@@ -18,6 +20,7 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.videoplayer.Messages.AndroidVideoPlayerApi;
 import io.flutter.plugins.videoplayer.Messages.CreateMessage;
 import io.flutter.plugins.videoplayer.Messages.PreCacheMessage;
+import io.flutter.plugins.videoplayer.Messages.IsCacheMessage;
 import io.flutter.plugins.videoplayer.Messages.LoopingMessage;
 import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
 import io.flutter.plugins.videoplayer.Messages.PlaybackSpeedMessage;
@@ -187,6 +190,17 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
         final VideoAsset videoAsset = VideoAsset.fromRemoteUrl(arg.getUri(), streamingFormat, httpHeaders, options);
         final boolean result = VideoPlayer.preCache(flutterState.applicationContext, videoAsset, options);
         return new PreCacheMessage.Builder().setIsSuccess(result).build();
+    }
+
+    @NonNull
+    @OptIn(markerClass = UnstableApi.class)
+    public Boolean isCached(IsCacheMessage msg){
+        return VideoPlayerCache.INSTANCE.isCached(msg.getCacheKey(), msg.getPosition(), msg.getLength());
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    public void initCache(@NonNull Long maxCacheSize){
+        VideoPlayerCache.INSTANCE.initCache(this.flutterState.applicationContext, maxCacheSize);
     }
 
     public void dispose(@NonNull TextureMessage arg) {

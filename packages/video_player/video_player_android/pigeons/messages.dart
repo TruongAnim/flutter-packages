@@ -23,6 +23,13 @@ class PreCacheMessage {
   bool isSuccess;
 }
 
+class IsCacheMessage {
+  IsCacheMessage(this.cacheKey, this.position, this.length);
+  String cacheKey;
+  int position;
+  int length;
+}
+
 class LoopingMessage {
   LoopingMessage(this.textureId, this.isLooping);
   int textureId;
@@ -71,6 +78,8 @@ abstract class AndroidVideoPlayerApi {
   void initialize();
   TextureMessage create(CreateMessage msg);
   PreCacheMessage preCache(CreateMessage msg);
+  bool isCached(IsCacheMessage msg);
+  void initCache(int maxCacheSize);
   void dispose(TextureMessage msg);
   void setLooping(LoopingMessage msg);
   void setVolume(VolumeMessage msg);
