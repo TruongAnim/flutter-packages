@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+final List<String> videoUrls = <String>[
+  'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8',
+  'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/3d3bafbb8f8245189733757fb9f06b20/manifest/video.m3u8',
+  'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/a07cbb3c111848e3806eeecc0cdcad63/manifest/video.m3u8',
+  'https://ccdn.dramahub.me/videos/4d97870e3a3c4fd1a099dafb12e08504/index.m3u8',
+  'https://ccdn.dramahub.me/videos/09b782d7e6a9229ab026ce8ca7b503be/index.m3u8',
+];
+
 class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
   final int index;
@@ -17,7 +25,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void initState() {
     super.initState();
-    print('init ${widget.index}');
 
     controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl),
         videoPlayerOptions: VideoPlayerOptions(
@@ -28,7 +35,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 maxCacheSize: 1024 * 1024 * 1024),
             bufferingConfig:
                 const BufferingConfig(minBufferMs: 3000, maxBufferMs: 5000)));
-    int time = DateTime.now().millisecondsSinceEpoch;
+    final int time = DateTime.now().millisecondsSinceEpoch;
     print('start ${DateTime.now()} ${widget.videoUrl}}');
 
     controller.initialize().then((event) async {
@@ -83,38 +90,9 @@ class TikTokPageView extends StatefulWidget {
 }
 
 class _TikTokPageViewState extends State<TikTokPageView> {
-  final List<String> videoUrls = [
-    'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/3d3bafbb8f8245189733757fb9f06b20/manifest/video.m3u8',
-    'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8',
-    'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/a07cbb3c111848e3806eeecc0cdcad63/manifest/video.m3u8',
-    'https://ccdn.dramahub.me/videos/4d97870e3a3c4fd1a099dafb12e08504/index.m3u8',
-    'https://ccdn.dramahub.me/videos/09b782d7e6a9229ab026ce8ca7b503be/index.m3u8',
-  ];
-
   @override
   void initState() {
     super.initState();
-    VideoPlayerController.preCache(
-        'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8',
-        videoPlayerOptions: VideoPlayerOptions(
-            hlsCacheConfig: HlsCacheConfig(
-                useCache: true,
-                cacheKey:
-                    'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8')));
-    VideoPlayerController.preCache(
-        'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/3d3bafbb8f8245189733757fb9f06b20/manifest/video.m3u8',
-        videoPlayerOptions: VideoPlayerOptions(
-            hlsCacheConfig: HlsCacheConfig(
-                useCache: true,
-                cacheKey:
-                    'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/3d3bafbb8f8245189733757fb9f06b20/manifest/video.m3u8')));
-    VideoPlayerController.preCache(
-        'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/a07cbb3c111848e3806eeecc0cdcad63/manifest/video.m3u8',
-        videoPlayerOptions: VideoPlayerOptions(
-            hlsCacheConfig: HlsCacheConfig(
-                useCache: true,
-                cacheKey:
-                    'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/a07cbb3c111848e3806eeecc0cdcad63/manifest/video.m3u8')));
   }
 
   @override
@@ -135,7 +113,7 @@ class _TikTokPageViewState extends State<TikTokPageView> {
         GestureDetector(
             onTap: () {
               videoUrls.add(
-                  'https://ccdn.dramahub.me/videos/09b782d7e6a9229ab026ce8ca7b503be/index.m3u8');
+                  'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8');
               setState(() {});
             },
             child: const Text(
@@ -152,10 +130,55 @@ class TestHlsVideo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: TikTokPageView(),
+    return MaterialApp(
+        home: Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+                onPressed: () {
+                  VideoPlayerController.initCache(1024 * 1024 * 1024);
+                },
+                child: const Text('Init cache')),
+            ElevatedButton(
+                onPressed: () {
+                  final String link1 = videoUrls[1];
+                  final String link2 = videoUrls[2];
+                  VideoPlayerController.preCache(link1,
+                      videoPlayerOptions: VideoPlayerOptions(
+                          hlsCacheConfig:
+                              HlsCacheConfig(useCache: true, cacheKey: link1)));
+                  VideoPlayerController.preCache(link2,
+                      videoPlayerOptions: VideoPlayerOptions(
+                          hlsCacheConfig:
+                              HlsCacheConfig(useCache: true, cacheKey: link2)));
+                },
+                child: const Text('Pre cache')),
+            ElevatedButton(
+                onPressed: () async {
+                  print(
+                      'isCached: ${await VideoPlayerController.isCached(videoUrls[1])}');
+                  print(
+                      'isCached: ${await VideoPlayerController.isCached(videoUrls[1])}');
+                },
+                child: const Text('Check cache')),
+            Builder(builder: (context) {
+              return ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Scaffold(
+                                body: TikTokPageView(),
+                              )),
+                    );
+                  },
+                  child: const Text('To video page'));
+            })
+          ],
+        ),
       ),
-    );
+    ));
   }
 }

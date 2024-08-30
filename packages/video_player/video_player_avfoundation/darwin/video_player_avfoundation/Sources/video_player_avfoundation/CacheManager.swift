@@ -37,15 +37,25 @@ import PINCache
     
     
     ///Setups cache server for HLS streams
-    @objc public func setup(){
+    @objc public func setup(_ maxCacheSize: NSInteger){
         GCDWebServer.setLogLevel(4)
         let webServer = GCDWebServer()
         let cache = PINCache.shared
-        cache.diskCache.byteLimit = diskCacheSize
+        cache.diskCache.byteLimit = UInt(maxCacheSize)
         cache.diskCache.ageLimit = 30 * 24 * 60 * 60
         let urlSession = URLSession.shared
         server = HLSCachingReverseProxyServer(webServer: webServer, urlSession: urlSession, cache: cache)
         server?.start(port: 8080)
+    }
+
+    @objc public func isVideoCached(_ url: URL) -> Bool {
+        let cache = PINCache.shared
+        // Check if the object exists in cache
+        if cache.containsObject(forKey: url.absoluteString) {
+            return true // The video is cached
+        } else {
+            return false // The video is not cached
+        }
     }
     
     @objc public func setMaxCacheSize(_ maxCacheSize: NSNumber?){

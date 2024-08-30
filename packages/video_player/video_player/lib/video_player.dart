@@ -410,6 +410,17 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         bufferingConfig: videoPlayerOptions?.bufferingConfig);
   }
 
+  /// Check if a video is cached or not
+  static Future<bool> isCached(String cacheKey,
+      {int position = 0, int length = 100}) async {
+    return _videoPlayerPlatform.isCached(cacheKey, position, length);
+  }
+
+  /// Init the cache manager
+  static Future<void> initCache(int maxCacheSize) async {
+    return _videoPlayerPlatform.initCache(maxCacheSize);
+  }
+
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
     final bool allowBackgroundPlayback =

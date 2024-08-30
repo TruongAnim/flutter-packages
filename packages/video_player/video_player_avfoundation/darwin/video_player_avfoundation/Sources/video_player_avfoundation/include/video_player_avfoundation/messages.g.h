@@ -39,6 +39,11 @@ NSObject<FlutterMessageCodec> *FVPAVFoundationVideoPlayerApiGetCodec(void);
 - (void)initialize:(FlutterError *_Nullable *_Nonnull)error;
 /// @return `nil` only when `error != nil`.
 - (nullable NSNumber *)createWithOptions:(FVPCreationOptions *)creationOptions error:(FlutterError *_Nullable *_Nonnull)error;
+/// @return `nil` only when `error != nil`.
+- (nullable NSNumber *)preCache:(FVPCreationOptions *)preCacheMsg error:(FlutterError *_Nullable *_Nonnull)error;
+/// @return `nil` only when `error != nil`.
+- (nullable NSNumber *)isCached:(NSString *)cacheKey position:(NSInteger)position length:(NSInteger)length error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)initCache:(NSInteger)maxCacheSize error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)disposePlayer:(NSInteger)textureId error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setLooping:(BOOL)isLooping forPlayer:(NSInteger)textureId error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setVolume:(double)volume forPlayer:(NSInteger)textureId error:(FlutterError *_Nullable *_Nonnull)error;

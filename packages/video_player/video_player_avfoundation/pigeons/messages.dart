@@ -39,6 +39,12 @@ abstract class AVFoundationVideoPlayerApi {
   @ObjCSelector('createWithOptions:')
   // Creates a new player and returns its ID.
   int create(CreationOptions creationOptions);
+  @ObjCSelector('preCache:')
+  int preCache(CreationOptions preCacheMsg);
+  @ObjCSelector('isCached:position:length:')
+  int isCached(String cacheKey, int position, int length);
+  @ObjCSelector('initCache:')
+  void initCache(int maxCacheSize);
   @ObjCSelector('disposePlayer:')
   void dispose(int textureId);
   @ObjCSelector('setLooping:forPlayer:')

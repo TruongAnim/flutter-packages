@@ -60,6 +60,16 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('preCache() has not been implemented.');
   }
 
+  /// is video cached
+  Future<bool> isCached(String cacheKey, int position, int length) {
+    throw UnimplementedError('isCached() has not been implemented.');
+  }
+
+  /// is video cached
+  Future<void> initCache(int maxCacheSize) {
+    throw UnimplementedError('initCache() has not been implemented.');
+  }
+
   /// Returns a Stream of [VideoEventType]s.
   Stream<VideoEvent> videoEventsFor(int textureId) {
     throw UnimplementedError('videoEventsFor() has not been implemented.');

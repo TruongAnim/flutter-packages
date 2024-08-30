@@ -65,6 +65,33 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<bool?> preCache(DataSource dataSource,
+      {HlsCacheConfig? hlsCacheConfig,
+      BufferingConfig? bufferingConfig}) async {
+    String? uri;
+    Map<String, String> httpHeaders = <String, String>{};
+    uri = dataSource.uri;
+    httpHeaders = dataSource.httpHeaders;
+    final CreationOptions message = CreationOptions(
+      uri: uri,
+      httpHeaders: httpHeaders,
+      hlsCacheConfig: hlsCacheConfig?.toMap() ?? const HlsCacheConfig().toMap(),
+    );
+
+    return (await _api.preCache(message)) == 0;
+  }
+
+  @override
+  Future<bool> isCached(String cacheKey, int position, int length) async {
+    return (await _api.isCached(cacheKey, position, length)) == 0;
+  }
+
+  @override
+  Future<void> initCache(int maxCacheSize) async {
+    return _api.initCache(maxCacheSize);
+  }
+
+  @override
   Future<void> setLooping(int textureId, bool looping) {
     return _api.setLooping(looping, textureId);
   }
