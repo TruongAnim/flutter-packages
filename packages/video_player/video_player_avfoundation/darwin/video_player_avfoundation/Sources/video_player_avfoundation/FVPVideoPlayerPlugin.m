@@ -665,6 +665,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 @property(nonatomic, strong) id<FVPDisplayLinkFactory> displayLinkFactory;
 @property(nonatomic, strong) id<FVPAVFactory> avFactory;
 @property(readonly, nonatomic) AVPlayer *player;
+@property (nonatomic, assign) BOOL isCacheInitialized;
 @end
 
 @implementation FVPVideoPlayerPlugin
@@ -811,8 +812,12 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)initCache:(NSInteger)maxCacheSize error:(FlutterError **)error {
+  if (self.isCacheInitialized) {
+    return;
+  }
   _cacheManager = [[CacheManager alloc] init];
   [_cacheManager setup:maxCacheSize];
+  self.isCacheInitialized = YES;
 }
 
 - (void)disposePlayer:(NSInteger)textureId error:(FlutterError **)error {

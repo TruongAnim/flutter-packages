@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 final List<String> videoUrls = <String>[
-  'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8',
+  'https://aka-cdn.dramahub.me/films/718d7e2b71ca99b36bb3b8b97f4453d5/index.m3u8',
   'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/3d3bafbb8f8245189733757fb9f06b20/manifest/video.m3u8',
   'https://customer-5jdhfnsg3n4uo7jz.cloudflarestream.com/a07cbb3c111848e3806eeecc0cdcad63/manifest/video.m3u8',
   'https://ccdn.dramahub.me/videos/4d97870e3a3c4fd1a099dafb12e08504/index.m3u8',
-  'https://ccdn.dramahub.me/videos/09b782d7e6a9229ab026ce8ca7b503be/index.m3u8',
+  'https://aka-cdn.dramahub.me/films/7353f5506c082478247c679423fd21a8/index.m3u8',
 ];
 
 class VideoPlayerWidget extends StatefulWidget {
@@ -113,7 +113,7 @@ class _TikTokPageViewState extends State<TikTokPageView> {
         GestureDetector(
             onTap: () {
               videoUrls.add(
-                  'https://aka-cdn.dramahub.me/videos/3babc6605794a5ec4dbda9e18a87f598/index.m3u8');
+                  'https://aka-cdn.dramahub.me/films/7353f5506c082478247c679423fd21a8/index.m3u8');
               setState(() {});
             },
             child: const Text(
