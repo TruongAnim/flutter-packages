@@ -63,9 +63,9 @@ class CreateMessage {
   String? uri;
   String? packageName;
   String? formatHint;
-  Map<String?, String?> httpHeaders;
   Map<String?, String?> hlsCacheConfig;
   Map<String?, String?> bufferingConfig;
+  Map<String, String> httpHeaders;
 }
 
 class MixWithOthersMessage {
